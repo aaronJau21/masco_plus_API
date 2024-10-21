@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+enum Role {
+  ADMIN
+  USER
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Trabajadores {
+  id        Int     @id @default(autoincrement())
+  name      String
+  user_name String
+  password  String
+  activate  Boolean @default(false)
+  role      Role
+
+  Marcas    Marcas[]
+  Productos Productos[]
+}
+
+model Marcas {
+  id            Int     @id @default(autoincrement())
+  name          String
+  activate      Boolean @default(false)
+  trabajador_id Int
+
+  Trabajadores Trabajadores @relation(fields: [trabajador_id], references: [id])
+  Productos    Productos[]
+}
+
+model Productos {
+  id                    Int     @id @default(autoincrement())
+  name                  String
+  activate              Boolean @default(false)
+  stock                 Int     @default(0)
+  precio                Float   @default(0.0)
+  descripcion           String  @db.Text
+  informacion_adicional Json
+  trabajador_id         Int
+  marca_id              Int
+
+  Trabajadores Trabajadores @relation(fields: [trabajador_id], references: [id])
+  Marccas      Marcas       @relation(fields: [marca_id], references: [id])
+}
+
+model Clientes {
+  id           Int     @id @default(autoincrement())
+  name         String
+  email        String
+  password     String
+  activate     Boolean @default(false)
+  confirmation Boolean @default(false)
+}
+
+model Valoraciones {
+  id        Int    @id @default(autoincrement())
+  estrellas Int    @default(0)
+  contenido String @db.Text
+}
