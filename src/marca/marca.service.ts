@@ -6,23 +6,22 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ICreateResponse } from 'src/shared/interfaces/create.response';
 import { IBrandFindAll } from './interfaces/brand-find_all.interface';
 import { ActivateMarcaDto } from './dto/activate-marca.dto';
+import { Marcas } from '@prisma/client';
 
 @Injectable()
 export class MarcaService {
   constructor(private readonly prismaService: PrismaService) {}
-  async create(data: CreateMarcaDto, user: any): Promise<ICreateResponse> {
+  async create(data: CreateMarcaDto, user: any): Promise<Marcas> {
     const trabajador_id: any = user.id;
 
-    await this.prismaService.marcas.create({
+    const marca = await this.prismaService.marcas.create({
       data: {
         ...data,
         trabajador_id,
       },
     });
 
-    return {
-      msg: 'Se creo correctamente',
-    };
+    return marca;
   }
 
   async findAll(): Promise<IBrandFindAll> {
