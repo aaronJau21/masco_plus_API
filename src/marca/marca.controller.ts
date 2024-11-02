@@ -46,7 +46,7 @@ export class MarcaController {
   }
 
   @UseGuards(AuthGuard)
-  @Patch('activate-brand/:id')
+  @Patch('/activate-brand/:id')
   activateBrand(
     @Param('id') id: string,
     @Body() activate: ActivateMarcaDto,

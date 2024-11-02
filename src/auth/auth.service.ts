@@ -22,7 +22,7 @@ export class AuthService {
     await this.prismaServe.trabajadores.create({
       data: {
         ...trabajador,
-        passworsd: hash,
+        password: hash,
       },
     });
 
@@ -44,7 +44,7 @@ export class AuthService {
 
     const pwd = await this.hashService.comparePassword(
       password,
-      trabajador.passworsd,
+      trabajador.password,
     );
 
     if (!pwd) throw new NotFoundException('Credenciales incorrectas');
