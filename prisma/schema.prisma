@@ -46,8 +46,8 @@ model Productos {
   activate              Boolean @default(false)
   stock                 Int     @default(0)
   precio                Float   @default(0.0)
-  descripcion           String  @db.Text
-  informacion_adicional Json
+  descripcion           String?  @db.Text
+  informacion_adicional String?
   trabajador_id         Int
   marca_id              Int
 
