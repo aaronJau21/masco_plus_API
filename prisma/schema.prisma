@@ -35,24 +35,36 @@ model Marcas {
   name          String
   activate      Boolean @default(false)
   trabajador_id Int
+  image         String? @db.Text
 
   Trabajadores Trabajadores @relation(fields: [trabajador_id], references: [id])
   Productos    Productos[]
 }
 
 model Productos {
-  id                    Int     @id @default(autoincrement())
+  id                    Int           @id @default(autoincrement())
   name                  String
-  activate              Boolean @default(false)
-  stock                 Int     @default(0)
-  precio                Float   @default(0.0)
-  descripcion           String?  @db.Text
+  activate              Boolean       @default(false)
+  stock                 Int           @default(0)
+  precio                Float         @default(0.0)
+  descripcion           String?       @db.Text
   informacion_adicional String?
   trabajador_id         Int
   marca_id              Int
+  image                 String?       @db.Text
+  Informacion           Informacion[]
 
   Trabajadores Trabajadores @relation(fields: [trabajador_id], references: [id])
   Marccas      Marcas       @relation(fields: [marca_id], references: [id])
+}
+
+model Informacion {
+  id          Int    @id @default(autoincrement())
+  name        String
+  content     String
+  producto_id Int
+
+  Productos Productos @relation(fields: [producto_id], references: [id])
 }
 
 model Clientes {
@@ -62,6 +74,7 @@ model Clientes {
   password     String
   activate     Boolean @default(false)
   confirmation Boolean @default(false)
+  image        String? @db.Text
 }
 
 model Valoraciones {

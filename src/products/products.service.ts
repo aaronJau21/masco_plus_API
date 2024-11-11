@@ -28,8 +28,13 @@ export class ProductsService {
     return `This action returns a #${id} product`;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: number, data: UpdateProductDto) {
+    const product = await this.prisma.productos.update({
+      where: { id },
+      data,
+    });
+
+    return { product };
   }
 
   remove(id: number) {

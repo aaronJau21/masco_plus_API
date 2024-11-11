@@ -7,4 +7,5 @@ export class CreateMarcaDto {
   @IsBoolean()
   @IsOptional()
   activate: boolean;
+
 }

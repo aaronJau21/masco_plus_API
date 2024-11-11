@@ -5,9 +5,10 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UseGuards,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { MarcaService } from './marca.service';
 import { CreateMarcaDto } from './dto/create-marca.dto';
@@ -15,6 +16,7 @@ import { UpdateMarcaDto } from './dto/update-marca.dto';
 import { AuthGuard } from 'src/shared/guard/auth.guard';
 import { Request } from 'express';
 import { ActivateMarcaDto } from './dto/activate-marca.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('marca')
 export class MarcaController {
@@ -22,9 +24,14 @@ export class MarcaController {
 
   @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createMarcaDto: CreateMarcaDto, @Req() req: Request) {
+  @UseInterceptors(FileInterceptor('image'))
+  create(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createMarcaDto: CreateMarcaDto,
+    @Req() req: Request,
+  ) {
     const user = req['user'];
-    return this.marcaService.create(createMarcaDto, user);
+    return this.marcaService.create(createMarcaDto, user, file);
   }
 
   @UseGuards(AuthGuard)
@@ -55,8 +62,8 @@ export class MarcaController {
     return this.marcaService.activateBrand(+id, activate, req);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.marcaService.remove(+id);
+  @Get('/list/activate')
+  listActivateBrand() {
+    return this.marcaService.listActivateBrand();
   }
 }

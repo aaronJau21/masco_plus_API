@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -26,6 +27,7 @@ export class ProductsController {
     return this.productsService.create(createProductDto, user);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.productsService.findAll();
