@@ -25,13 +25,22 @@ export class MarcaController {
   @UseGuards(AuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'))
-  create(
+  create(@Body() createMarcaDto: CreateMarcaDto, @Req() req: Request) {
+    const user = req['user'];
+    return this.marcaService.create(createMarcaDto, user);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('upload-image/:id')
+  @UseInterceptors(FileInterceptor('image'))
+  uploadImage(
+    @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
-    @Body() createMarcaDto: CreateMarcaDto,
     @Req() req: Request,
   ) {
     const user = req['user'];
-    return this.marcaService.create(createMarcaDto, user, file);
+
+    return this.marcaService.uploadImage(+id, user, file);
   }
 
   @UseGuards(AuthGuard)

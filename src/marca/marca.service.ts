@@ -17,29 +17,29 @@ import * as uuid from 'uuid';
 export class MarcaService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(
-    data: CreateMarcaDto,
-    user: any,
-    file: Express.Multer.File,
-  ): Promise<Marcas> {
+  async create(data: CreateMarcaDto, user: any): Promise<Marcas> {
     const trabajador_id: any = user.id;
 
-    if (!file) {
-      throw new BadRequestException('No se ha cargado ningún archivo');
-    }
+    const marca = await this.prismaService.marcas.create({
+      data: {
+        name: data.name,
+        trabajador_id,
+      },
+    });
 
-    // Generar un nombre único para el archivo
+    return marca;
+  }
+
+  async uploadImage(id: number, user: any, file: Express.Multer.File) {
+    const trabajador_id: any = user.id;
     const filename = `${uuid.v4()}-${file.originalname}`;
     const uploadDir = path.join(__dirname, '..', '..', 'uploads', 'brand');
 
-    // Crear el directorio si no existe
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
     const uploadPath = path.join(uploadDir, filename);
-
-    // Guardar el archivo en el sistema de archivos desde el buffer
     try {
       fs.writeFileSync(uploadPath, file.buffer);
     } catch (error) {
@@ -47,12 +47,11 @@ export class MarcaService {
       throw new BadRequestException('Error al guardar el archivo');
     }
 
-    // Crear la marca en la base de datos
-    const marca = await this.prismaService.marcas.create({
+    const marca = await this.prismaService.marcas.update({
+      where: { id },
       data: {
-        name: data.name,
         trabajador_id,
-        image: uploadPath,
+        image: filename,
       },
     });
 
@@ -61,7 +60,16 @@ export class MarcaService {
 
   async findAll(): Promise<IBrandFindAll> {
     const brands = await this.prismaService.marcas.findMany();
-    return { marcas: brands };
+    const hostUrl = 'http://localhost:3000';
+
+    const brandsWithImageUrls = brands.map((brand) => {
+      if (brand.image) {
+        brand.image = `${hostUrl}/uploads/brand/${brand.image}`;
+      }
+      return brand;
+    });
+
+    return { marcas: brandsWithImageUrls };
   }
 
   async findOne(id: number) {
