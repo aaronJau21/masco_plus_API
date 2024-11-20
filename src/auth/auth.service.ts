@@ -5,6 +5,7 @@ import { HashingService } from 'src/shared/hashing/hashing.service';
 import { ICreateResponse } from 'src/shared/interfaces/create.response';
 import { LoginDto } from './dtos/login.dto';
 import { JsonWebTokenService } from 'src/shared/json-web-token/json-web-token.service';
+import { ILoginResponse } from './interfaces/LoginResponse.interface';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,7 @@ export class AuthService {
     };
   }
 
-  async login(data: LoginDto): Promise<{ token: string }> {
+  async login(data: LoginDto): Promise<ILoginResponse> {
     const { password, user_name } = data;
 
     const trabajador = await this.prismaServe.trabajadores.findFirst({
@@ -57,6 +58,10 @@ export class AuthService {
 
     return {
       token,
+      user: {
+        name: trabajador.name,
+        role: trabajador.role,
+      },
     };
   }
 }
